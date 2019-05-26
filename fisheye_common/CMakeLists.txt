@@ -1,6 +1,21 @@
-configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
+configure_file(
+  config.h.in
+  "${CMAKE_CURRENT_BINARY_DIR}/config.h" @ONLY)
 
-add_library(fisheye_common SHARED fisheye_common.cpp fisheye_common.h config.h.in)
+add_library(
+  fisheye_common
+    SHARED
+      fisheye_common.cpp
+      fisheye_common.h
+      undistort.cpp
+      undistort.h
+      config.h.in
+)
+
+target_link_libraries(
+  fisheye_common
+    ${OpenCV_LIBS}
+)
 
 set_target_properties(fisheye_common PROPERTIES
   PUBLIC_HEADER "fisheye_common.h;${CMAKE_CURRENT_BINARY_DIR}/config.h")

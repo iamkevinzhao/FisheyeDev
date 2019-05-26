@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(FisheyeDev CXX)
 
+set(CMAKE_CXX_STANDARD 11)
+
 set(FISHEYEDEV_MAJOR_VERSION 0)
 set(FISHEYEDEV_MINOR_VERSION 1)
 set(FISHEYEDEV_PATCH_VERSION 0)
@@ -27,6 +29,8 @@ foreach(p LIB BIN INCLUDE CMAKE)
     set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
   endif()
 endforeach()
+
+find_package(OpenCV REQUIRED)
 
 # set up include-directories
 include_directories(
