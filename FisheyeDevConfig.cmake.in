@@ -6,11 +6,15 @@
 
 # Compute paths
 get_filename_component(FISHEYEDEV_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set(FISHEYEDEV_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
+set(FisheyeDev_INCLUDE_DIRS "@CONF_INCLUDE_DIRS@")
 
 # Our library dependencies (contains definitions for IMPORTED targets)
-include("${FISHEYEDEV_CMAKE_DIR}/FooBarTargets.cmake")
+include("${FISHEYEDEV_CMAKE_DIR}/FisheyeDevTargets.cmake")
 
 # These are IMPORTED targets created by FooBarTargets.cmake
-set(FISHEYEDEV_LIBRARIES foo)
-set(FISHEYEDEV_EXECUTABLE bar)
+set(FisheyeDev_LIBRARIES fisheye_common)
+set(FISHEYEDEV_EXECUTABLE fisheye_undistorted)
+
+set(CMAKE_CXX_STANDARD 11)
+
+find_package(OpenCV REQUIRED)

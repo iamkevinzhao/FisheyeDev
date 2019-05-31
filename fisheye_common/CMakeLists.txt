@@ -17,8 +17,14 @@ target_link_libraries(
     ${OpenCV_LIBS}
 )
 
+set(PUBLIC_HEADERS
+  fisheye_common.h
+  undistort.h
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h
+)
+
 set_target_properties(fisheye_common PROPERTIES
-  PUBLIC_HEADER "fisheye_common.h;${CMAKE_CURRENT_BINARY_DIR}/config.h")
+  PUBLIC_HEADER "${PUBLIC_HEADERS}")
 
 install(TARGETS fisheye_common
   # IMPORTANT: Add the fisheye_common library to the "export-set"
