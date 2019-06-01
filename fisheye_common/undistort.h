@@ -37,6 +37,7 @@ class FisheyeUndistort {
  public:
   bool LoadCalibResult(const std::string& calib);
   cv::Mat Undistort(const cv::Mat& src);
+  std::pair<cv::Mat, cv::Mat> Undistort(const std::pair<cv::Mat, cv::Mat>& src);
   float sf = 1.5;
  private:
   std::unique_ptr<ocam_model> model_;

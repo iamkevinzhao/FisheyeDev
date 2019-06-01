@@ -1,5 +1,6 @@
 #include "undistort.h"
 #include <opencv2/imgproc.hpp>
+#include <iostream>
 
 namespace fisheye {
 void cam2world(
@@ -181,6 +182,14 @@ bool FisheyeUndistort::LoadCalibResult(const std::string &calib) {
   return true;
 }
 
+std::pair<cv::Mat, cv::Mat> FisheyeUndistort::Undistort(
+    const std::pair<cv::Mat, cv::Mat>& src) {
+  std::pair<cv::Mat, cv::Mat> result;
+  result.first = Undistort(src.first);
+  result.second = Undistort(src.second);
+  return result;
+}
+
 cv::Mat FisheyeUndistort::Undistort(const cv::Mat &src) {
   if (!model_) {
     return cv::Mat(0, 0, CV_32FC1);
@@ -200,6 +209,10 @@ cv::Mat FisheyeUndistort::Undistort(const cv::Mat &src) {
       src_cstyle, dst_persp, mapx_persp, mapy_persp,
       CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
 
-  return cv::cvarrToMat(dst_persp);
+  cvReleaseMat(&mapx_persp);
+  cvReleaseMat(&mapy_persp);
+  cv::Mat result = cv::cvarrToMat(dst_persp, true);
+  cvReleaseImage(&dst_persp);
+   return result;
 }
 }
