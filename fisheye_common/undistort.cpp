@@ -85,6 +85,32 @@ void world2cam(
 }
 
 void create_perspecive_undistortion_LUT(
+    cv::Mat *mapx, cv::Mat *mapy, struct ocam_model *ocam_model, float sf)
+{
+  int i, j;
+  int width = mapx->cols; //New width
+  int height = mapx->rows;//New height
+  float *data_mapx = (float*)mapx->data;
+  float *data_mapy = (float*)mapy->data;
+  float Nxc = height / 2.0;
+  float Nyc = width / 2.0;
+  float Nz = -width / sf;
+  double M[3];
+  double m[2];
+
+  for (i = 0; i<height; i++)
+    for (j = 0; j<width; j++)
+    {
+      M[0] = (i - Nxc);
+      M[1] = (j - Nyc);
+      M[2] = Nz;
+      world2cam(m, M, ocam_model);
+      *(data_mapx + i * width + j) = (float)m[1];
+      *(data_mapy + i * width + j) = (float)m[0];
+    }
+}
+
+void create_perspecive_undistortion_LUT(
     CvMat *mapx, CvMat *mapy, struct ocam_model *ocam_model, float sf)
 {
   int i, j;
@@ -194,25 +220,33 @@ cv::Mat FisheyeUndistort::Undistort(const cv::Mat &src) {
   if (!model_) {
     return cv::Mat(0, 0, CV_32FC1);
   }
-  IplImage copy = src;
-  IplImage *src_cstyle = &copy;
-  IplImage *dst_persp = cvCreateImage(cvGetSize(src_cstyle), 8, 3);
+//  IplImage copy = src;
+//  IplImage *src_cstyle = &copy;
+//  IplImage *dst_persp = cvCreateImage(cvGetSize(src_cstyle), 8, 3);
 
 
-  CvMat* mapx_persp = cvCreateMat(src_cstyle->height, src_cstyle->width, CV_32FC1);
-  CvMat* mapy_persp = cvCreateMat(src_cstyle->height, src_cstyle->width, CV_32FC1);
+//  CvMat* mapx_persp = cvCreateMat(src_cstyle->height, src_cstyle->width, CV_32FC1);
+//  CvMat* mapy_persp = cvCreateMat(src_cstyle->height, src_cstyle->width, CV_32FC1);
 
-  create_perspecive_undistortion_LUT(
-      mapx_persp, mapy_persp, model_.get(), sf);
+  cv::Mat mapx_persp(src.rows, src.cols, CV_32FC1);
+  cv::Mat mapy_persp(src.rows, src.cols, CV_32FC1);
+  create_perspecive_undistortion_LUT(&mapx_persp, &mapy_persp, model_.get(), sf);
 
-  cvRemap(
-      src_cstyle, dst_persp, mapx_persp, mapy_persp,
-      CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
+//  create_perspecive_undistortion_LUT(
+//      mapx_persp, mapy_persp, model_.get(), sf);
 
-  cvReleaseMat(&mapx_persp);
-  cvReleaseMat(&mapy_persp);
-  cv::Mat result = cv::cvarrToMat(dst_persp, true);
-  cvReleaseImage(&dst_persp);
-   return result;
+//  cv::InterpolationFlags;
+  cv::Mat dst;
+  cv::remap(src, dst, mapx_persp, mapy_persp, cv::INTER_LINEAR);
+//  cvRemap(
+//      src_cstyle, dst_persp, mapx_persp, mapy_persp,
+//      CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
+
+//  cvReleaseMat(&mapx_persp);
+//  cvReleaseMat(&mapy_persp);
+//  cv::Mat result = cv::cvarrToMat(dst_persp, true);
+//  cvReleaseImage(&dst_persp);
+  return dst;
+//  return result;
 }
 }

@@ -32,6 +32,8 @@ void cam2world(
     double point3D[3], double point2D[2], struct ocam_model *myocam_model);
 void create_perspecive_undistortion_LUT(
     CvMat *mapx, CvMat *mapy, struct ocam_model *ocam_model, float sf);
+void create_perspecive_undistortion_LUT(
+    cv::Mat *mapx, cv::Mat *mapy, struct ocam_model *ocam_model, float sf);
 
 class FisheyeUndistort {
  public:
